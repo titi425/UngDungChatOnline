@@ -1,0 +1,26 @@
+<div id="chat-box" style="height: 300px; overflow-y: scroll; border: 1px solid #ccc;"></div>
+<input id="msg" placeholder="Nhập tin nhắn...">
+<button onclick="send()">Gửi</button>
+
+<script>
+const myName = localStorage.getItem('username');
+
+async function loadMsgs() {
+    const res = await fetch('http://localhost:3000/messages');
+    const data = await res.json();
+    document.getElementById('chat-box').innerHTML = data.map(m => `<p><b>${m.sender}:</b> ${m.message}</p>`).join('');
+}
+
+async function send() {
+    await fetch('http://localhost:3000/messages', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({sender: myName, receiver: 'All', message: document.getElementById('msg').value})
+    });
+document.getElementById('chat-box').innerHTML = data.map(m => {
+    const isMe = m.sender === myName ? 'my-msg' : '';
+    return `<div class="msg-item ${isMe}"><b>${m.sender}:</b> ${m.message}</div>`;
+}).join('');
+}
+setInterval(loadMsgs, 2000);
+</script>
